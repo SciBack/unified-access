@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Unified Access — Alternativa open source a EZproxy para universidades latinoamericanas. SSO unificado para DSpace, OJS, Koha, Moodle y bases de datos externas.">
+  <title>Unified Access — Acceso unificado para bibliotecas digitales universitarias</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --navy: #1a2744;
+      --navy-light: #243258;
+      --navy-dark: #111c33;
+      --green: #22c55e;
+      --green-dark: #16a34a;
+      --blue-accent: #3b82f6;
+      --blue-light: #eff6ff;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-400: #94a3b8;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --white: #ffffff;
+      --text-base: #1e293b;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font);
+      color: var(--text-base);
+      background: var(--white);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      background: var(--navy-dark);
+      padding: 0 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+
+    .nav-brand {
+      color: var(--white);
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-brand .brand-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover {
+      color: var(--white);
+    }
+
+    /* ---- HERO ---- */
+    .hero {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 50%, var(--navy-light) 100%);
+      color: var(--white);
+      padding: 5rem 1.5rem 4.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      bottom: -30%;
+      right: -5%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(34,197,94,0.15);
+      color: var(--green);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 999px;
+      padding: 0.25rem 0.875rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+
+    .hero h1 span {
+      color: var(--green);
+    }
+
+    .hero-tagline {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: rgba(255,255,255,0.75);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.5;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.75rem;
+      border-radius: var(--radius);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background: var(--green-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(34,197,94,0.35);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border: 1.5px solid rgba(255,255,255,0.35);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.6);
+    }
+
+    /* ---- SECTIONS ---- */
+    section {
+      padding: 4rem 1.5rem;
+    }
+
+    .section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blue-accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--navy);
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+    }
+
+    .section-subtitle {
+      color: var(--gray-600);
+      font-size: 1.0625rem;
+      max-width: 560px;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ---- PROBLEMA ---- */
+    #problema {
+      background: var(--gray-50);
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .problem-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      box-shadow: var(--shadow);
+    }
+
+    .problem-icon {
+      width: 40px;
+      height: 40px;
+      background: #fef2f2;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .problem-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: #ef4444;
+      fill: none;
+    }
+
+    .problem-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.5rem;
+    }
+
+    .problem-card p {
+      font-size: 0.9rem;
+      color: var(--gray-600);
+      line-height: 1.55;
+    }
+
+    /* ---- SOLUCION / ARQUITECTURA ---- */
+    #solucion {
+      background: var(--white);
+    }
+
+    .arch-diagram {
+      background: var(--navy-dark);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.5rem;
+      margin-top: 0.5rem;
+      overflow-x: auto;
+    }
+
+    .arch-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .arch-node {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: var(--radius);
+      padding: 0.6rem 1rem;
+      text-align: center;
+      color: var(--white);
+      min-width: 120px;
+    }
+
+    .arch-node.source {
+      border-color: rgba(59,130,246,0.5);
+      background: rgba(59,130,246,0.1);
+    }
+
+    .arch-node.idp {
+      border-color: rgba(34,197,94,0.5);
+      background: rgba(34,197,94,0.1);
+    }
+
+    .arch-node.apps {
+      border-color: rgba(168,85,247,0.45);
+      background: rgba(168,85,247,0.08);
+    }
+
+    .arch-node.analytics {
+      border-color: rgba(251,191,36,0.45);
+      background: rgba(251,191,36,0.07);
+    }
+
+    .arch-node .node-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 0.2rem;
+    }
+
+    .arch-node .node-name {
+      font-size: 0.875rem;
+      font-weight: 700;
+    }
+
+    .arch-node .node-sub {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 0.15rem;
+    }
+
+    .arch-arrow {
+      color: rgba(255,255,255,0.3);
+      font-size: 1.25rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .arch-sources {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .arch-apps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .arch-legend {
+      display: flex;
+      gap: 1.25rem;
+      margin-top: 1.25rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .arch-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .arch-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ---- CARACTERISTICAS ---- */
+    #caracteristicas {
+      background: var(--gray-50);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .feature-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .feature-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--blue-light);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .feature-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--blue-accent);
+      fill: none;
+    }
+
+    .feature-card h3 {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.25rem;
+    }
+
+    .feature-card p {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+      line-height: 1.5;
+    }
+
+    /* ---- STACK ---- */
+    #stack {
+      background: var(--white);
+    }
+
+    .stack-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+      list-style: none;
+    }
+
+    .stack-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.125rem 1.25rem;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+    }
+
+    .stack-badge {
+      background: var(--navy);
+      color: var(--white);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+      letter-spacing: 0.02em;
+    }
+
+    .stack-item-body h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.15rem;
+    }
+
+    .stack-item-body p {
+      font-size: 0.825rem;
+      color: var(--gray-600);
+      line-height: 1.45;
+    }
+
+    /* ---- ROADMAP ---- */
+    #roadmap {
+      background: var(--navy-dark);
+      color: var(--white);
+    }
+
+    #roadmap .section-title {
+      color: var(--white);
+    }
+
+    #roadmap .section-subtitle {
+      color: rgba(255,255,255,0.6);
+    }
+
+    #roadmap .section-label {
+      color: var(--green);
+    }
+
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .roadmap-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      position: relative;
+    }
+
+    .roadmap-card.active {
+      border-color: rgba(34,197,94,0.4);
+      background: rgba(34,197,94,0.06);
+    }
+
+    .roadmap-phase {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 0.5rem;
+    }
+
+    .roadmap-card.active .roadmap-phase {
+      color: var(--green);
+    }
+
+    .roadmap-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: var(--white);
+    }
+
+    .roadmap-items {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .roadmap-items li {
+      font-size: 0.84rem;
+      color: rgba(255,255,255,0.65);
+      padding-left: 1rem;
+      position: relative;
+    }
+
+    .roadmap-items li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+      width: 5px;
+      height: 5px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 50%;
+    }
+
+    .roadmap-card.active .roadmap-items li::before {
+      background: var(--green);
+    }
+
+    .roadmap-status {
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(34,197,94,0.15);
+      color: var(--green);
+      border: 1px solid rgba(34,197,94,0.3);
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      background: var(--navy-dark);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .footer-brand {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .footer-text {
+      font-size: 0.84rem;
+      color: rgba(255,255,255,0.45);
+    }
+
+    .footer-text a {
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-text a:hover {
+      color: var(--green);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.25rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.84rem;
+      color: rgba(255,255,255,0.45);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover {
+      color: var(--white);
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 640px) {
+      section {
+        padding: 3rem 1.25rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 3.5rem 1.25rem 3rem;
+      }
+
+      .arch-row {
+        gap: 0.35rem;
+      }
+
+      .arch-arrow {
+        transform: rotate(90deg);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="nav-brand">
+        <span class="brand-dot"></span>
+        Unified Access
+      </a>
+      <ul class="nav-links">
+        <li><a href="#problema">El problema</a></li>
+        <li><a href="#solucion">Arquitectura</a></li>
+        <li><a href="#caracteristicas">Caracteristicas</a></li>
+        <li><a href="#roadmap">Roadmap</a></li>
+        <li><a href="https://github.com/SciBack/unified-access">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-badge">Open Source</div>
+    <h1>
+      <span>Unified Access</span><br>
+      para bibliotecas digitales
+    </h1>
+    <p class="hero-tagline">
+      Un solo login para todos los recursos de tu biblioteca digital.
+      Alternativa open source a EZproxy para universidades latinoamericanas.
+    </p>
+    <div class="hero-actions">
+      <a href="https://github.com/SciBack/unified-access" class="btn btn-primary">Ver en GitHub</a>
+      <a href="docs/arquitectura" class="btn btn-outline">Documentacion</a>
+    </div>
+  </header>
+
+  <!-- EL PROBLEMA -->
+  <section id="problema">
+    <div class="section-inner">
+      <p class="section-label">El problema</p>
+      <h2 class="section-title">La biblioteca digital fragmentada</h2>
+      <p class="section-subtitle">Las universidades gestionan docenas de sistemas que no se comunican entre si.</p>
+
+      <div class="problem-grid">
+        <div class="problem-card">
+          <div class="problem-icon">
+            <svg viewBox="0 0 24 24" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <h3>Login separado en cada sistema</h3>
+          <p>DSpace, OJS, Koha, Moodle, EBSCO, Scopus y ProQuest tienen cuentas y credenciales independientes. El usuario se autentica varias veces por sesion.</p>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-icon">
+            <svg viewBox="0 0 24 24" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <h3>Sin control de vigencias</h3>
+          <p>Egresados con acceso activo, alumnos dados de baja que siguen descargando, y sin forma de saber en tiempo real quien esta habilitado para cada recurso.</p>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-icon">
+            <svg viewBox="0 0 24 24" stroke-width="2">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>
+              <path d="M2 20h20"/>
+            </svg>
+          </div>
+          <h3>Sin datos de uso</h3>
+          <p>No hay manera de reportar a rectorado cuantos usuarios accedieron a EBSCO este mes, ni que facultad usa mas Scopus. Justificar la renovacion de licencias es imposible.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LA SOLUCION -->
+  <section id="solucion">
+    <div class="section-inner">
+      <p class="section-label">La solucion</p>
+      <h2 class="section-title">Una capa de identidad unificada</h2>
+      <p class="section-subtitle">Unified Access centraliza la autenticacion y la governance de identidades sobre tu infraestructura existente.</p>
+
+      <div class="arch-diagram">
+        <div class="arch-row">
+
+          <!-- FUENTES -->
+          <div class="arch-sources">
+            <div class="arch-node source">
+              <div class="node-label">Fuente</div>
+              <div class="node-name">Active Directory</div>
+              <div class="node-sub">LDAP / Entra ID</div>
+            </div>
+            <div class="arch-node source">
+              <div class="node-label">Fuente</div>
+              <div class="node-name">SIS / Matricula</div>
+              <div class="node-sub">API de la universidad</div>
+            </div>
+          </div>
+
+          <div class="arch-arrow">&rarr;</div>
+
+          <!-- MIDPOINT -->
+          <div class="arch-node idp">
+            <div class="node-label">Governance</div>
+            <div class="node-name">MidPoint</div>
+            <div class="node-sub">Sincronizacion<br>Roles &amp; Vigencias</div>
+          </div>
+
+          <div class="arch-arrow">&rarr;</div>
+
+          <!-- KEYCLOAK -->
+          <div class="arch-node idp">
+            <div class="node-label">Identity Provider</div>
+            <div class="node-name">Keycloak</div>
+            <div class="node-sub">SAML 2.0 / OIDC<br>SSO unificado</div>
+          </div>
+
+          <div class="arch-arrow">&rarr;</div>
+
+          <!-- APPS -->
+          <div class="arch-apps">
+            <div class="arch-node apps">
+              <div class="node-name">DSpace / OJS / Koha</div>
+              <div class="node-sub">Sistemas internos</div>
+            </div>
+            <div class="arch-node apps">
+              <div class="node-name">EBSCO / Scopus</div>
+              <div class="node-sub">Bases externas</div>
+            </div>
+          </div>
+
+          <div class="arch-arrow">&rarr;</div>
+
+          <!-- ANALYTICS -->
+          <div class="arch-node analytics">
+            <div class="node-label">Analitica</div>
+            <div class="node-name">Metabase</div>
+            <div class="node-sub">Reportes por<br>facultad / carrera</div>
+          </div>
+
+        </div>
+
+        <div class="arch-legend">
+          <div class="arch-legend-item">
+            <div class="arch-legend-dot" style="background:#3b82f6;"></div>
+            Fuentes de identidad
+          </div>
+          <div class="arch-legend-item">
+            <div class="arch-legend-dot" style="background:#22c55e;"></div>
+            Capa de identidad y governance
+          </div>
+          <div class="arch-legend-item">
+            <div class="arch-legend-dot" style="background:#a855f7;"></div>
+            Aplicaciones consumidoras
+          </div>
+          <div class="arch-legend-item">
+            <div class="arch-legend-dot" style="background:#fbbf24;"></div>
+            Analitica de uso
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARACTERISTICAS -->
+  <section id="caracteristicas">
+    <div class="section-inner">
+      <p class="section-label">Caracteristicas</p>
+      <h2 class="section-title">Todo lo que necesita tu biblioteca</h2>
+      <p class="section-subtitle">Diseniado para el contexto universitario latinoamericano.</p>
+
+      <div class="features-grid">
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div>
+            <h3>SSO universal (SAML 2.0 + OIDC)</h3>
+            <p>Un solo login para todos los sistemas. Compatible con los principales protocolos de federacion de identidades usados por DSpace, OJS, Koha y bases de datos academicas.</p>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Governance de identidades (MidPoint)</h3>
+            <p>Aprovisionamiento y desaprovisionamiento automatico de cuentas. Roles por facultad, carrera y ciclo academico sincronizados desde el SIS.</p>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Control de vigencias por matricula</h3>
+            <p>Accesos habilitados y revocados automaticamente segun el estado de matricula. Fin de semestre: acceso restringido. Nueva matricula: acceso restaurado.</p>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Integracion con EBSCO, Scopus, ProQuest</h3>
+            <p>Federacion de identidades con bases de datos externas mediante SAML. El usuario accede sin credenciales adicionales y el acceso se controla desde un solo punto.</p>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" stroke-width="2">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>
+              <path d="M2 20h20"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Analitica por facultad y carrera</h3>
+            <p>Dashboards en Metabase con metricas de uso por recurso, facultad, carrera y periodo. Genera reportes listos para presentar a rectorado y justificar renovaciones.</p>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Open source, sin licencias</h3>
+            <p>100% software libre. MidPoint, Keycloak, Metabase y Nginx son open source. Sin costos de licenciamiento. Desplegado con Docker Compose en tu propia infraestructura.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK -->
+  <section id="stack">
+    <div class="section-inner">
+      <p class="section-label">Stack tecnologico</p>
+      <h2 class="section-title">Construido sobre herramientas probadas</h2>
+      <p class="section-subtitle">Cada componente fue seleccionado por su madurez, comunidad y adecuacion al contexto universitario.</p>
+
+      <ul class="stack-list">
+        <li class="stack-item">
+          <span class="stack-badge">MidPoint</span>
+          <div class="stack-item-body">
+            <h4>Identity Governance &amp; Administration</h4>
+            <p>Sincronizacion de identidades desde AD/LDAP y SIS. Aprovisionamiento automatico, roles, vigencias y auditoria completa de cambios.</p>
+          </div>
+        </li>
+        <li class="stack-item">
+          <span class="stack-badge">Keycloak</span>
+          <div class="stack-item-body">
+            <h4>Identity &amp; Access Management</h4>
+            <p>Identity Provider central. Implementa SAML 2.0, OIDC y OAuth 2.0. Provee el SSO unificado a todos los sistemas internos y externos.</p>
+          </div>
+        </li>
+        <li class="stack-item">
+          <span class="stack-badge">Nginx</span>
+          <div class="stack-item-body">
+            <h4>Reverse proxy y autenticacion perimetral</h4>
+            <p>Punto de entrada unico. Termina TLS, enruta trafico y aplica validacion de sesion antes de llegar a las aplicaciones.</p>
+          </div>
+        </li>
+        <li class="stack-item">
+          <span class="stack-badge">Metabase</span>
+          <div class="stack-item-body">
+            <h4>Analitica de uso y reportes</h4>
+            <p>Dashboards interactivos sobre los logs de acceso. Permite reportar uso por recurso, facultad, carrera y periodo academico sin conocimientos de SQL.</p>
+          </div>
+        </li>
+        <li class="stack-item">
+          <span class="stack-badge">Docker</span>
+          <div class="stack-item-body">
+            <h4>Orquestacion con Docker Compose</h4>
+            <p>Toda la plataforma se despliega con un solo archivo Compose. Sin Kubernetes ni infraestructura compleja. Adecuado para el equipo de TI de una universidad mediana.</p>
+          </div>
+        </li>
+        <li class="stack-item">
+          <span class="stack-badge">PostgreSQL</span>
+          <div class="stack-item-body">
+            <h4>Persistencia de identidades y logs</h4>
+            <p>Base de datos relacional compartida por MidPoint, Keycloak y el modulo de analitica. Backups diarios automatizados.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section id="roadmap">
+    <div class="section-inner">
+      <p class="section-label">Roadmap</p>
+      <h2 class="section-title">Plan de desarrollo</h2>
+      <p class="section-subtitle">Cuatro fases incrementales hacia la plataforma completa.</p>
+
+      <div class="roadmap-grid">
+
+        <div class="roadmap-card active">
+          <div class="roadmap-phase">Fase 1</div>
+          <h3>Fundacion</h3>
+          <ul class="roadmap-items">
+            <li>Docker Compose base</li>
+            <li>Keycloak + PostgreSQL</li>
+            <li>SSO con DSpace y OJS</li>
+            <li>Nginx como reverse proxy</li>
+            <li>Documentacion de despliegue</li>
+          </ul>
+          <span class="roadmap-status">En desarrollo</span>
+        </div>
+
+        <div class="roadmap-card">
+          <div class="roadmap-phase">Fase 2</div>
+          <h3>Governance</h3>
+          <ul class="roadmap-items">
+            <li>Integracion MidPoint</li>
+            <li>Conector AD / LDAP / Entra ID</li>
+            <li>Conector SIS (API matricula)</li>
+            <li>Aprovisionamiento automatico</li>
+            <li>Control de vigencias</li>
+          </ul>
+        </div>
+
+        <div class="roadmap-card">
+          <div class="roadmap-phase">Fase 3</div>
+          <h3>Bases externas</h3>
+          <ul class="roadmap-items">
+            <li>Federacion SAML con EBSCO</li>
+            <li>Integracion Scopus</li>
+            <li>Integracion ProQuest</li>
+            <li>Gestion de IP ranges</li>
+            <li>Pruebas con universidades piloto</li>
+          </ul>
+        </div>
+
+        <div class="roadmap-card">
+          <div class="roadmap-phase">Fase 4</div>
+          <h3>Analitica</h3>
+          <ul class="roadmap-items">
+            <li>Metabase con dashboards base</li>
+            <li>Reportes por facultad y carrera</li>
+            <li>Exportacion para rectorado</li>
+            <li>Alertas de accesos anomalos</li>
+            <li>API de metricas</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">Unified Access</div>
+      <p class="footer-text">
+        Un proyecto de <a href="https://sciback.com" target="_blank" rel="noopener">SciBack</a>
+        &mdash; soluciones de repositorios institucionales para universidades latinoamericanas.
+      </p>
+      <ul class="footer-links">
+        <li><a href="https://github.com/SciBack/unified-access" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="docs/arquitectura">Documentacion</a></li>
+        <li><a href="https://sciback.com" target="_blank" rel="noopener">sciback.com</a></li>
+      </ul>
+    </div>
+  </footer>
+
+</body>
+</html>
